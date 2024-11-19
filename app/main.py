@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 import uvicorn
-from app import pubsub
 
 app = FastAPI()
 
