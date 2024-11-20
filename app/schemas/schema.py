@@ -12,7 +12,7 @@ class EmotionItem(BaseModel):
   result: Emotion
   confidence: int
     
-class Journal(BaseModel):
+class JournalSchema(BaseModel):
   userId: str
   journalId: str
   journal: str
