@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 
 tests/__pycache__/
+schema/__pycache__
 
 .env
 .env.production
