@@ -2,11 +2,11 @@ from pydantic import BaseModel
 from enum import Enum
     
 class Emotion(Enum):
-  SAD = 'sad'
-  HAPPY = 'happy'
-  NEUTRAL = 'neutral'
-  ANGER = 'anger'
-  SCARED = 'scared'
+  SAD = 'Sad'
+  HAPPY = 'Happy'
+  NEUTRAL = 'Neutral'
+  ANGER = 'Anger'
+  SCARED = 'Scared'
 
 class EmotionItem(BaseModel):
   result: Emotion
