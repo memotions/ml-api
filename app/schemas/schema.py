@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from enum import Enum
     
 class Emotion(Enum):
@@ -10,8 +10,12 @@ class Emotion(Enum):
 
 class EmotionItem(BaseModel):
   result: Emotion
-  confidence: int
-    
+  confidence: float
+  
+  @field_validator("confidence", mode="before")
+  def format_confidence(cls, value):
+    return round(float(value), 4) 
+      
 class JournalSchema(BaseModel):
   userId: str
   journalId: str
