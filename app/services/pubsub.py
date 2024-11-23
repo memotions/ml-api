@@ -2,7 +2,7 @@ import os
 from google.cloud import pubsub_v1
 from app.schemas.schema import JournalSchema
 
-def publish_to_pubsub(journal: JournalSchema):
+async def publish_to_pubsub(journal: JournalSchema):
   # get env variables and set up pubsub
   publisher = pubsub_v1.PublisherClient()
   project_id = os.getenv('PROJECT_ID')
