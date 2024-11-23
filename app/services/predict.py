@@ -1,5 +1,5 @@
 import numpy as np
-import json
+from datetime import datetime, timezone
 from app.schemas.schema import JournalSchema, Emotion, EmotionItem
 from app.services.feedback import feedback_service
 
@@ -21,10 +21,14 @@ async def predict_service(journal: JournalSchema, model) -> JournalSchema:
             for i, conf in enumerate(predictions[0]) if conf > threshold
         ]
         
-        # Assign emotion into journalSchema
+        # Specify datetime
+        analyzed_at = datetime.now()
+        
+        # Assign data into journalSchema
         journal.emotion =  emotion_data
-
-        print(f"Formatted prediction response: {journal}")
+        journal.analyzedAt = analyzed_at
+        
+        # Generate feedback
         journal = await feedback_service(journal, model)
         return journal
     

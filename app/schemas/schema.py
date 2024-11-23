@@ -1,4 +1,5 @@
 from pydantic import BaseModel, field_validator
+from datetime import datetime
 from enum import Enum
     
 class Emotion(Enum):
@@ -22,3 +23,4 @@ class JournalSchema(BaseModel):
   journal: str
   emotion: list[EmotionItem] | None
   feedback: str | None
+  analyzedAt: datetime | None
