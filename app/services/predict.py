@@ -1,5 +1,7 @@
 import numpy as np
+from fastapi import HTTPException
 from datetime import datetime
+from app.core.response import json_response
 from app.core.logging_config import setup_logging
 from app.schemas.schema import JournalSchema, Emotion, EmotionItem
 from app.services.feedback import feedback_service
@@ -10,42 +12,38 @@ logger, _ = setup_logging()
 async def predict_service(journal: JournalSchema, model) -> JournalSchema:
     threshold = 0.2
     try:
-        logger.info("Starting prediction process for journal")
-        if not journal.journal.strip():
-            raise ValueError("Journal text is empty")
-
         if model is None:
-            raise ValueError("Prediction model is not loaded")
+            raise HTTPException(status_code=404, detail="Prediction model not found")
+        if not journal.journal.strip():
+            raise HTTPException(status_code=400, detail="Journal text cannot be empty")
 
-        # Format input data and predict
+        logger.info("Starting prediction process for journal")
+
+        # Predict emotions
         input_data = np.array([journal.journal]).astype("object")
-        logger.debug(f"Input data shape: {input_data.shape}")
-
-        # Process predictions
         predictions = model.predict(input_data)
-        logger.debug(f"Raw prediction values: {predictions}")
+        logger.debug(f"Predictions: {predictions}")
 
-        # Format prediction result into pydantic schema
+        # Filter predictions by confidence threshold
         emotion_classes = [emotion.value for emotion in Emotion]
         emotion_data = [
             EmotionItem(result=emotion_classes[i], confidence=round(float(conf), 3))
             for i, conf in enumerate(predictions[0])
             if conf > threshold
         ]
-
         if not emotion_data:
             logger.warning("No emotions detected above threshold")
 
-        logger.info(f"Detected emotions: {[e.result for e in emotion_data]}")
-        # Update journal
+        # Update journal with results
         journal.emotion = emotion_data
         journal.analyzedAt = datetime.now()
 
         # Generate feedback
-        journal = await feedback_service(journal, model)
+        return await feedback_service(journal, model)
 
-        return journal
-
+    except HTTPException as e:
+        logger.error(f"HTTPException: {e.detail}")
+        return json_response(status_code=e.status_code, message=e.detail)
     except Exception as e:
-        logger.error(f"Error in predict_service: {e}", exc_info=True)
-        raise ValueError(f"Prediction service failed: {e}")
+        logger.error(f"Unexpected error: {e}", exc_info=True)
+        return json_response(status_code=500, detail="Prediction failed")
