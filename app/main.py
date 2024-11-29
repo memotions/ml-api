@@ -20,17 +20,15 @@ async def lifespan(app: FastAPI):
     # task execute when startup
     logger.info("Load Model")
     model_predict = await load_model(os.getenv("PREDICT_MODEL_URL"))
-    # model_feedback = await load_model(os.getenv('FEEDBACK_MODEL_URL'))
 
     app.state.model_predict = model_predict
-    # app.state.model_feedback = model_feedback
+
     logger.info("Model stored in app state")
     yield
 
     # task execute when shutdown
-    await unload_model(app.state.model_predict, app.state.model_feedback)
+    await unload_model(app.state.model_predict)
     app.state.model_predict = None
-    # app.state.model_feedback = None
 
 
 app = FastAPI(lifespan=lifespan)
