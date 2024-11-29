@@ -39,5 +39,4 @@ async def publish_to_pubsub(journal: JournalSchema):
 
     except Exception as e:
         logger.error(f"Failed to publish message to Pub/Sub: {e}", exc_info=True)
-        raise HTTPException(status_code=500, message="Publish to pubsub failed")
-        # return json_response(status_code=500, message=f"Failed to publish message: {e}")
+        return json_response(status_code=500, message="Something went wrong")

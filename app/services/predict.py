@@ -13,9 +13,13 @@ async def predict_service(journal: JournalSchema, model) -> JournalSchema:
     threshold = 0.2
     try:
         if model is None:
-            raise HTTPException(status_code=404, detail="Prediction model not found")
+            logger.error("Prediction Model Not Found")
+            raise HTTPException(status_code=500, detail="Prediction model not found")
         if not journal.journal.strip():
-            raise HTTPException(status_code=400, detail="Journal text cannot be empty")
+            logger.error("Journal Text Empty")
+            return json_response(
+                status_code=400, message="Journal text cannot be empty"
+            )
 
         logger.info("Starting prediction process for journal")
 
@@ -39,11 +43,8 @@ async def predict_service(journal: JournalSchema, model) -> JournalSchema:
         journal.analyzedAt = datetime.now()
 
         # Generate feedback
-        return await feedback_service(journal, model)
+        return await feedback_service(journal)
 
-    except HTTPException as e:
-        logger.error(f"HTTPException: {e.detail}")
-        return json_response(status_code=e.status_code, message=e.detail)
     except Exception as e:
-        logger.error(f"Unexpected error: {e}", exc_info=True)
-        return json_response(status_code=500, detail="Prediction failed")
+        logger.error(f"Failed to predict: {e}", exc_info=True)
+        return json_response(status_code=500, message="Something went wrong")
