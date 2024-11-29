@@ -17,7 +17,6 @@ async def load_model(MODEL_URL):
         return json_response(404, "Model not found")
 
 
-async def unload_model(*models):
-    for model in models:
-        del model
+async def unload_model(model):
+    del model
     gc.collect()
