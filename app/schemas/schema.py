@@ -21,8 +21,8 @@ class EmotionItem(BaseModel):
 
 
 class JournalSchema(BaseModel):
-    userId: str
-    journalId: str
+    userId: int
+    journalId: int
     journal: str
     emotion: list[EmotionItem] | None
     feedback: str | None
