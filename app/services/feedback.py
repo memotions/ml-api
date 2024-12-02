@@ -53,7 +53,7 @@ async def generate_feedback(journal_text: str, project_id, model_location, model
     try:
         vertexai.init(project=project_id, location=model_location)
         model = GenerativeModel(
-            f"projects/{project_id}/locations/${model_location}/endpoints/{model_id}",
+            f"projects/{project_id}/locations/{model_location}/endpoints/{model_id}",
             system_instruction=[Config.SYSTEM_INSTRUCTION],
         )
         chat = model.start_chat()
