@@ -1,5 +1,6 @@
 import os
 import vertexai
+from datetime import datetime
 from fastapi import HTTPException
 from vertexai.generative_models import GenerativeModel, SafetySetting
 from app.schemas.schema import JournalSchema
@@ -39,6 +40,7 @@ async def feedback_service(journal: JournalSchema):
         )
         logger.debug(f"Generated Feedback: {journal.feedback}")
 
+        journal.createdAt = datetime.now()
         # publish to pubsub
         await publish_to_pubsub(journal)
 

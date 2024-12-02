@@ -25,5 +25,6 @@ class JournalSchema(BaseModel):
     journalId: int
     journal: str
     emotion: list[EmotionItem] | None
-    feedback: str | None
     analyzedAt: datetime | None
+    feedback: str | None
+    createdAt: datetime | None
