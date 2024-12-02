@@ -1,11 +1,12 @@
 fastapi==0.115.5
-google-cloud==0.34.0
 google_cloud_aiplatform==1.73.0
 google-cloud-pubsub==2.27.1
 google-cloud-storage==2.18.2
 numpy==1.26.4
-protobuf==5.29.0
+protobuf==4.21.6
 pydantic==2.9.2
 python-dotenv==1.0.1
 tensorflow==2.17.1
 uvicorn==0.15.0
+transfomers==4.46.3
+tf_keras==2.18.0
