@@ -1,7 +1,8 @@
 import os
 import vertexai
+from datetime import datetime
 from fastapi import HTTPException
-from vertexai.generative_models import GenerativeModel, SafetySetting
+from vertexai.generative_models import GenerativeModel
 from app.schemas.schema import JournalSchema
 from app.services.pubsub import publish_to_pubsub
 from app.core.logging_config import setup_logging
@@ -38,7 +39,7 @@ async def feedback_service(journal: JournalSchema):
             model_id,
         )
         logger.debug(f"Generated Feedback: {journal.feedback}")
-
+        journal.createdAt = datetime.now()
         # publish to pubsub
         await publish_to_pubsub(journal)
 
@@ -52,7 +53,7 @@ async def generate_feedback(journal_text: str, project_id, model_location, model
     try:
         vertexai.init(project=project_id, location=model_location)
         model = GenerativeModel(
-            f"projects/{project_id}/locations/{model_location}/endpoints/{model_id}",
+            f"projects/{project_id}/locations/${model_location}/endpoints/{model_id}",
             system_instruction=[Config.SYSTEM_INSTRUCTION],
         )
         chat = model.start_chat()
@@ -66,4 +67,5 @@ async def generate_feedback(journal_text: str, project_id, model_location, model
         result = " ".join(raw_response.split()).strip()
         return result
     except Exception as e:
-        raise e
+        logger.error(f"Error generating feedback: {e}")
+        return "Maaf, saat ini kami sedang tidak bisa memberikan feedback. Tapi tetap pantengin terus ya!"
