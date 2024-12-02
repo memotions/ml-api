@@ -8,6 +8,12 @@ def setup_logging(env: str = "production"):
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
 
+    log_files = ["app.log", "error.log"]
+    for log_file in log_files:
+        log_path = log_dir / log_file
+        if not log_path.exists():
+            log_path.touch()
+
     # Set log level based on environment
     log_levels = {
         "production": "WARNING",
