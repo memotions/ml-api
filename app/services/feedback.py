@@ -28,8 +28,8 @@ async def feedback_service(journal: JournalSchema):
 
     try:
         # load model and generate response
-        emotions = [emotion.result.value for emotion in journal.emotion]
-        input_data = f"{journal.journal}. Ini adalah mood {', '.join(emotions)}"
+        emotions = [emotion.emotion.value for emotion in journal.emotionAnalysis]
+        input_data = f"{journal.journalContent}. Ini adalah mood {', '.join(emotions)}"
         logger.debug(f"Input data : {input_data}")
         logger.info("Generate feedback on journal")
         journal.feedback = await generate_feedback(
