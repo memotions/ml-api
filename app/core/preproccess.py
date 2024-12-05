@@ -32,14 +32,6 @@ def tokenize_text(text):
     return re.findall(r"\b\w+\b", text)
 
 
-def stemming_text(tokens):
-    factory = StemmerFactory()
-    stemmer = factory.create_stemmer()
-
-    stemmed_tokens = [stemmer.stem(token) for token in tokens]
-    return stemmed_tokens
-
-
 def indices_token(text, word_to_index):
     return [word_to_index.get(token, 0) for token in text]
 
@@ -54,7 +46,6 @@ def preprocess_text(text):
     logger.debug(f"Clean Text : {text}")
     text = tokenize_text(text)
     logger.debug(f"Tokenize Text : {text}")
-    text = stemming_text(text)
     logger.debug(f"Stemming : {text}")
     text = indices_token(text, word_to_index)
     logger.debug(f"indices : {text}")
