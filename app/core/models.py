@@ -13,9 +13,9 @@ async def load_model(MODEL_URL):
     BUCKET_NAME = os.getenv("BUCKET_NAME")
     CLOUD_MODEL_PATH = os.getenv("CLOUD_MODEL_PATH")
     try:
-        if not os.path.exists(f"./app/core/models/{MODEL_URL}"):
+        if not os.path.exists(MODEL_URL):
             if BUCKET_NAME and CLOUD_MODEL_PATH:
-                logger.debug(
+                logger.info(
                     f"Model not found locally. Attempting to download from cloud storage..."
                 )
                 await download_model_from_cloud(
@@ -27,8 +27,8 @@ async def load_model(MODEL_URL):
                 )
                 return json_response(500, "Something went wrong")
 
-        logger.debug(f"Load model from ./app/core/models/{MODEL_URL}...")
-        model = tf.keras.models.load_model(f"./app/core/models/{MODEL_URL}")
+        logger.info(f"Load model from {MODEL_URL}...")
+        model = tf.keras.models.load_model(MODEL_URL)
         return model
 
     except Exception as e:
@@ -43,17 +43,14 @@ async def unload_model(model):
 
 async def download_model_from_cloud(BUCKET_NAME, CLOUD_MODEL_PATH, destination):
     try:
-        destination = str(destination)
-        full_destination = os.path.join("./app/core/models", destination)
-        os.makedirs(os.path.dirname(full_destination), exist_ok=True)
-        logger.debug(
+        logger.info(
             f"Downloading model from cloud storage: {BUCKET_NAME}/{CLOUD_MODEL_PATH} to {destination}..."
         )
         client = storage.Client()
         bucket = client.bucket(BUCKET_NAME)
         blob = bucket.blob(CLOUD_MODEL_PATH)
         blob.download_to_filename(destination)
-        logger.debug("Model download completed.")
+        logger.info("Model download completed.")
     except Exception as e:
         logger.error(f"Error downloading model from cloud: {e}", exc_info=True)
         raise
