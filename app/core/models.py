@@ -43,6 +43,8 @@ async def unload_model(model):
 
 async def download_model_from_cloud(BUCKET_NAME, CLOUD_MODEL_PATH, destination):
     try:
+        full_destination = os.path.join("./app/core/models", destination)
+        os.makedirs(os.path.dirname(full_destination), exist_ok=True)
         logger.debug(
             f"Downloading model from cloud storage: {BUCKET_NAME}/{CLOUD_MODEL_PATH} to {destination}..."
         )
