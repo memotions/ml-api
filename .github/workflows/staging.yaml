@@ -1,0 +1,91 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+        description: Name of the target environment.    
+      ref:  
+        type: string
+        required: true
+        description: The tag or SHA to checkout.
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+      
+      - name: Black Format Checking
+        run: |
+          pip install black
+          black --check .
+
+      - name: Bandit Security Check
+        run: |
+          pip install bandit
+          bandit -r .
+
+  build-and-release:
+    needs: code-quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CREDENTIALS }}'
+          token_format: 'access_token'
+
+      - name: Docker Auth
+        id: docker-auth
+        uses: 'docker/login-action@v1'
+        with:
+          username: 'oauth2accesstoken'
+          password: '${{ steps.auth.outputs.access_token }}'
+          registry: '${{ vars.DEV_REGION }}-docker.pkg.dev'
+
+      - name: Build, tag and push container
+        id: build-image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true 
+          tags: |
+            ${{ vars.DEV_REGION }}-docker.pkg.dev/${{ vars.DEV_GCP_PROJECT_ID }}/${{ vars.DEV_ARTIFACT_REPO }}/${{ vars.DEV_SERVICE_NAME }}:${{ inputs.ref }} 
+
+  deploy-to-staging:
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CREDENTIALS }}'
+          token_format: 'access_token'
+      - name: Deploy to Cloud Run
+        id: deploy
+        run: |
+          gcloud run deploy ${{ vars.DEV_SERVICE_NAME }} \
+          --image=${{ vars.DEV_REGION }}-docker.pkg.dev/${{ vars.DEV_GCP_PROJECT_ID }}/${{ vars.DEV_ARTIFACT_REPO }}/${{ vars.DEV_SERVICE_NAME }}:${{ inputs.ref }} \
+          --region=${{ vars.DEV_REGION }} \
+          --project=${{ vars.DEV_GCP_PROJECT_ID }} \
+          --port=8000 \
+          --cpu=2 \
+          --memory=1G \
+          --min-instances=1 \
+          --max-instances=2 \
+          --set-env-vars=ENVIRONMENT=production,PREDICT_MODEL_URL=${{ vars.DEV_PREDICT_MODEL_URL }},PROJECT_ID=${{ vars.DEV_GCP_PROJECT_ID }},TOPIC_ID=${{ vars.DEV_TOPIC_ID }},VERTEX_PROJECT_ID=${{ vars.DEV_VERTEX_PROJECT_ID }},GEN_MODEL_LOCATION=${{ vars.DEV_GEN_MODEL_LOCATION }},GEN_MODEL_ID=${{ vars.DEV_GEN_MODEL_ID }},BUCKET_NAME=${{ vars.DEV_BUCKET_NAME }},CLOUD_MODEL_PATH=${{ vars.DEV_CLOUD_MODEL_PATH}} \
+          && gcloud run services update-traffic ${{ vars.DEV_SERVICE_NAME }} --region=${{ vars.DEV_REGION }} --to-latest

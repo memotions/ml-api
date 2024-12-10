@@ -51,7 +51,7 @@ def setup_logging(env: str = "production"):
             "file": {
                 "formatter": "default",
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": log_dir / "app.log",
+                "filename": str(log_dir / "app.log"),
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
                 "encoding": "utf8",
@@ -59,7 +59,7 @@ def setup_logging(env: str = "production"):
             "error_file": {
                 "formatter": "default",
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": log_dir / "error.log",
+                "filename": str(log_dir / "error.log"),
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
                 "encoding": "utf8",

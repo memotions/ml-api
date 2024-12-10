@@ -21,7 +21,8 @@ async def lifespan(app: FastAPI):
     # task execute when startup
     logger.info("Load Model")
 
-    model_predict = await load_model(os.getenv("PREDICT_MODEL_URL"), TFBertModel)
+    model_predict = await load_model("./app/core/models/memotions.keras")
+
 
     app.state.model_predict = model_predict
 

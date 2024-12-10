@@ -8,5 +8,5 @@ pydantic==2.9.2
 python-dotenv==1.0.1
 tensorflow==2.17.1
 uvicorn==0.15.0
-transformers==4.46.3
-tf_keras==2.18.0
+PySastrawi==1.2.0
+joblib==1.4.2

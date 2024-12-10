@@ -2,7 +2,7 @@ import os
 import vertexai
 from datetime import datetime
 from fastapi import HTTPException
-from vertexai.generative_models import GenerativeModel, SafetySetting
+from vertexai.generative_models import GenerativeModel
 from app.schemas.schema import JournalSchema
 from app.services.pubsub import publish_to_pubsub
 from app.core.logging_config import setup_logging
@@ -14,7 +14,7 @@ logger, _ = setup_logging()
 
 async def feedback_service(journal: JournalSchema):
     project_id = os.getenv("VERTEX_PROJECT_ID")
-    model_location = os.getenv("MODEL_LOCATION")
+    model_location = os.getenv("GEN_MODEL_LOCATION")
     model_id = os.getenv("GEN_MODEL_ID")
     logger.debug(
         f"project_id = {project_id}, model_location = {model_location}, model_id = {model_id}"
@@ -28,8 +28,8 @@ async def feedback_service(journal: JournalSchema):
 
     try:
         # load model and generate response
-        emotions = [emotion.result.value for emotion in journal.emotion]
-        input_data = f"{journal.journal}. Ini adalah mood {', '.join(emotions)}"
+        emotions = [emotion.emotion.value for emotion in journal.emotionAnalysis]
+        input_data = f"{journal.journalContent}. Ini adalah mood {', '.join(emotions)}"
         logger.debug(f"Input data : {input_data}")
         logger.info("Generate feedback on journal")
         journal.feedback = await generate_feedback(
@@ -39,6 +39,7 @@ async def feedback_service(journal: JournalSchema):
             model_id,
         )
         logger.debug(f"Generated Feedback: {journal.feedback}")
+        journal.createdAt = datetime.now()
 
         journal.createdAt = datetime.now()
         # publish to pubsub
@@ -68,4 +69,5 @@ async def generate_feedback(journal_text: str, project_id, model_location, model
         result = " ".join(raw_response.split()).strip()
         return result
     except Exception as e:
-        raise e
+        logger.error(f"Error generating feedback: {e}")
+        return "Maaf, saat ini kami sedang tidak bisa memberikan feedback. Tapi tetap pantengin terus ya!"

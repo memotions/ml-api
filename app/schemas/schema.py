@@ -4,15 +4,15 @@ from enum import Enum
 
 
 class Emotion(Enum):
-    SAD = "Sad"
-    HAPPY = "Happy"
-    NEUTRAL = "Neutral"
-    ANGER = "Anger"
-    SCARED = "Scared"
+    SAD = "SAD"
+    HAPPY = "HAPPY"
+    NEUTRAL = "NEUTRAL"
+    ANGER = "ANGER"
+    SCARED = "SCARED"
 
 
 class EmotionItem(BaseModel):
-    result: Emotion
+    emotion: Emotion
     confidence: float
 
     @field_validator("confidence", mode="before")
@@ -23,8 +23,8 @@ class EmotionItem(BaseModel):
 class JournalSchema(BaseModel):
     userId: int
     journalId: int
-    journal: str
-    emotion: list[EmotionItem] | None
+    journalContent: str
+    emotionAnalysis: list[EmotionItem] | None
     analyzedAt: datetime | str | None
     feedback: str | None
     createdAt: datetime | str | None
