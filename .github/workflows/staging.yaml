@@ -93,7 +93,7 @@ jobs:
         id: deploy
         run: |
           gcloud run deploy ${{ vars.DEV_SERVICE_NAME }} \
-          --image=${{ vars.DEV_REGION }}-docker.pkg.dev/${{ vars.DEV_GCP_PROJECT_ID }}/${{ vars.DEV_ARTIFACT_REPO }}/${{ vars.SERVICE_NAME }}:${{ inputs.ref }} \
+          --image=${{ vars.DEV_REGION }}-docker.pkg.dev/${{ vars.DEV_GCP_PROJECT_ID }}/${{ vars.DEV_ARTIFACT_REPO }}/${{ vars.DEV_SERVICE_NAME }}:${{ inputs.ref }} \
           --region=${{ vars.DEV_REGION }} \
           --project=${{ vars.DEV_GCP_PROJECT_ID }} \
           --port=8000 \
