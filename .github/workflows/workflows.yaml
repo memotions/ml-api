@@ -13,3 +13,13 @@ jobs:
       environment: staging
       ref: ${{ github.sha }}
     secrets: inherit
+  prod:
+    if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
+    uses: ./.github/workflows/production.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: production
+      ref: ${{ github.sha }}
+    secrets: inherit
