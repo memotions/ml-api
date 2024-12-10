@@ -83,6 +83,8 @@ jobs:
     needs: manual-approval
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Google Auth
         id: auth
         uses: 'google-github-actions/auth@v2'
@@ -97,8 +99,8 @@ jobs:
           --region=${{ vars.DEV_REGION }} \
           --project=${{ vars.DEV_GCP_PROJECT_ID }} \
           --port=8000 \
-          --cpu=2 \ 
-          --memory=1Gi \
+          --cpu=2 \
+          --memory=1G \
           --min-instances=1 \
           --max-instances=2 \
           --set-env-vars=ENVIRONMENT=production,PREDICT_MODEL_URL=${{ vars.DEV_PREDICT_MODEL_URL }},PROJECT_ID=${{ vars.DEV_GCP_PROJECT_ID }},TOPIC_ID=${{ vars.DEV_TOPIC_ID }},VERTEX_PROJECT_ID=${{ vars.DEV_VERTEX_PROJECT_ID }},GEN_MODEL_LOCATION=${{ vars.DEV_GEN_MODEL_LOCATION }},GEN_MODEL_ID=${{ vars.DEV_GEN_MODEL_ID }},BUCKET_NAME=${{ vars.DEV_BUCKET_NAME }},CLOUD_MODEL_PATH=${{ vars.DEV_CLOUD_MODEL_PATH}} \
