@@ -23,7 +23,6 @@ async def lifespan(app: FastAPI):
 
     model_predict = await load_model("./app/core/models/memotions.keras")
 
-
     app.state.model_predict = model_predict
 
     logger.info(f"Model stored in app state : {app.state.model_predict}")
