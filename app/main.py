@@ -1,5 +1,6 @@
 import os
 import uvicorn
+from transformers import TFBertModel
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -19,11 +20,13 @@ logger, log_config = setup_logging(env)
 async def lifespan(app: FastAPI):
     # task execute when startup
     logger.info("Load Model")
+
     model_predict = await load_model("./app/core/models/memotions.keras")
+
 
     app.state.model_predict = model_predict
 
-    logger.info("Model stored in app state")
+    logger.info(f"Model stored in app state : {app.state.model_predict}")
     yield
 
     # task execute when shutdown
@@ -48,8 +51,7 @@ async def predict(journal: JournalSchema, request: Request):
 
 @app.post("/feedback")
 async def feedback(journal: JournalSchema, request: Request):
-    model_feedback = request.app.state.model_feedback
-    result = await feedback_service(journal, model_feedback)
+    result = await feedback_service(journal)
     return result
 
 

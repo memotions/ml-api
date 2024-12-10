@@ -1,3 +1,5 @@
+import os
+from transformers import BertTokenizer
 import numpy as np
 from fastapi import HTTPException
 from datetime import datetime
@@ -8,9 +10,12 @@ from app.schemas.schema import JournalSchema, Emotion, EmotionItem
 from app.services.feedback import feedback_service
 
 logger, _ = setup_logging()
+MAX_LENGTH = 64
 
 
 async def predict_service(journal: JournalSchema, model) -> JournalSchema:
+    tokenizer = BertTokenizer.from_pretrained(os.getenv("BERT_MODEL_NAME"))
+    logger.debug(f"Tokenizer : {tokenizer}")
     threshold = 0.2
     try:
         if model is None:
@@ -24,7 +29,11 @@ async def predict_service(journal: JournalSchema, model) -> JournalSchema:
 
         logger.info("Starting prediction process for journal")
 
+        # input_data = np.array([journal.journal]).astype("object")
+        encoded_sample = tokenize_data([journal.journal], tokenizer)
+
         # Predict emotions
+
         input_data = preprocess_text(journal.journalContent)
         predictions = model.predict(input_data)
         logger.debug(f"Predictions_raw: {predictions}")
@@ -53,3 +62,13 @@ async def predict_service(journal: JournalSchema, model) -> JournalSchema:
     except Exception as e:
         logger.error(f"Failed to predict: {e}", exc_info=True)
         return json_response(status_code=500, message="Something went wrong")
+
+
+def tokenize_data(texts, tokenizer, max_len=MAX_LENGTH):
+    return tokenizer(
+        list(texts),
+        max_length=max_len,
+        truncation=True,
+        padding="max_length",
+        return_tensors="tf",
+    )

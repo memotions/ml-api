@@ -41,6 +41,7 @@ async def feedback_service(journal: JournalSchema):
         logger.debug(f"Generated Feedback: {journal.feedback}")
         journal.createdAt = datetime.now()
 
+        journal.createdAt = datetime.now()
         # publish to pubsub
         await publish_to_pubsub(journal)
 

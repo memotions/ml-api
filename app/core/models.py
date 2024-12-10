@@ -8,7 +8,6 @@ from app.core.response import json_response
 
 logger, _ = setup_logging()
 
-
 async def load_model(MODEL_URL):
     BUCKET_NAME = os.getenv("BUCKET_NAME")
     CLOUD_MODEL_PATH = os.getenv("CLOUD_MODEL_PATH")
