@@ -1,4 +1,4 @@
-import pickle
+import joblib
 import numpy as np
 import re
 
@@ -10,8 +10,8 @@ from app.core.logging_config import setup_logging
 logger, _ = setup_logging()
 
 
-with open("word_to_index.pkl", "rb") as f:
-    word_to_index = pickle.load(f)
+with open("word_to_index80.pkl", "rb") as f:
+    word_to_index = joblib.load(f)
 
 
 def clean_text(text):
