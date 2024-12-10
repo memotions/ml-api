@@ -64,7 +64,7 @@ jobs:
             ${{ vars.DEV_REGION }}-docker.pkg.dev/${{ vars.DEV_GCP_PROJECT_ID }}/${{ vars.DEV_ARTIFACT_REPO }}/${{ vars.DEV_SERVICE_NAME }}:${{ inputs.ref }} 
 
   deploy-to-staging:
-    needs: code-quality
+    needs: build-and-release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
