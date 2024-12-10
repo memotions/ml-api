@@ -61,26 +61,10 @@ jobs:
           file: ./Dockerfile
           push: true 
           tags: |
-            ${{ vars.DEV_REGION }}-docker.pkg.dev/${{ vars.DEV_GCP_PROJECT_ID }}/${{ vars.DEV_ARTIFACT_REPO }}/${{ vars.DEV_SERVICE_NAME }}:${{ inputs.ref }}
-    
-  manual-approval:
-    needs: build-and-release
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkinh
-        run: echo ${{ github.token }}
-      - name: Manual Approval
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ secrets.TOKEN }}
-          approvers: "GungIndi"
-          minimum-approvals: 1
-          timeout-minutes: 10
-          issue-title: "Approve Production Deployment"
-          issue-body: "Please review and approve deployment to production"
+            ${{ vars.DEV_REGION }}-docker.pkg.dev/${{ vars.DEV_GCP_PROJECT_ID }}/${{ vars.DEV_ARTIFACT_REPO }}/${{ vars.DEV_SERVICE_NAME }}:${{ inputs.ref }} 
 
   deploy-to-staging:
-    needs: manual-approval
+    needs: code-quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
