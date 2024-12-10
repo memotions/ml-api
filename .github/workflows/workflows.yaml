@@ -1,0 +1,15 @@
+on:
+  push:
+    branches: [staging, main]
+
+jobs: 
+  stage:
+    if: ${{ github.ref == 'refs/heads/staging' || github.base_ref == 'staging' }}
+    uses: ./.github/workflows/staging.yaml
+    permissions: 
+      id-token: write
+      contents: read
+    with: 
+      environment: staging
+      ref: ${{ github.sha }}
+    secrets: inherit
