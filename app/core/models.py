@@ -13,7 +13,7 @@ async def load_model(MODEL_URL):
     BUCKET_NAME = os.getenv("BUCKET_NAME")
     CLOUD_MODEL_PATH = os.getenv("CLOUD_MODEL_PATH")
     try:
-        if not os.path.exists(MODEL_URL):
+        if not os.path.exists(f"./app/core/models/{MODEL_URL}"):
             if BUCKET_NAME and CLOUD_MODEL_PATH:
                 logger.debug(
                     f"Model not found locally. Attempting to download from cloud storage..."
@@ -27,8 +27,8 @@ async def load_model(MODEL_URL):
                 )
                 return json_response(500, "Something went wrong")
 
-        logger.debug(f"Load model from {MODEL_URL}...")
-        model = tf.keras.models.load_model(MODEL_URL)
+        logger.debug(f"Load model from ./app/core/models/{MODEL_URL}...")
+        model = tf.keras.models.load_model(f"./app/core/models/{MODEL_URL}")
         return model
 
     except Exception as e:
