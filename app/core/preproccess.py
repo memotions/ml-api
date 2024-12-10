@@ -3,7 +3,6 @@ import numpy as np
 import re
 
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
-from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from app.core.logging_config import setup_logging
 

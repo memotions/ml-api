@@ -1,6 +1,6 @@
 import gc
 import os
-import dotenv
+
 import tensorflow as tf
 from google.cloud import storage
 from app.core.logging_config import setup_logging

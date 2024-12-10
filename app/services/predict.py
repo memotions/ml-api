@@ -1,4 +1,3 @@
-import os
 import numpy as np
 from fastapi import HTTPException
 from datetime import datetime

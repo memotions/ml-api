@@ -1,6 +1,5 @@
 import os
 import uvicorn
-from transformers import TFBertModel
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -20,12 +19,11 @@ logger, log_config = setup_logging(env)
 async def lifespan(app: FastAPI):
     # task execute when startup
     logger.info("Load Model")
-
     model_predict = await load_model("./app/core/models/memotions.keras")
 
     app.state.model_predict = model_predict
 
-    logger.info(f"Model stored in app state : {app.state.model_predict}")
+    logger.info("Model stored in app state")
     yield
 
     # task execute when shutdown

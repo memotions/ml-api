@@ -1,4 +1,3 @@
-import os
 from vertexai.generative_models import SafetySetting
 
 
