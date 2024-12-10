@@ -19,7 +19,7 @@ logger, log_config = setup_logging(env)
 async def lifespan(app: FastAPI):
     # task execute when startup
     logger.info("Load Model")
-    model_predict = await load_model(os.getenv("PREDICT_MODEL"))
+    model_predict = await load_model("./app/core/models/memotions.keras")
 
     app.state.model_predict = model_predict
 
