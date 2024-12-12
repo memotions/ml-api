@@ -1,18 +1,10 @@
 on:
   push:
-    branches: [staging, main]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs: 
-  stage:
-    if: ${{ github.ref == 'refs/heads/staging' || github.base_ref == 'staging' }}
-    uses: ./.github/workflows/staging.yaml
-    permissions: 
-      id-token: write
-      contents: read
-    with: 
-      environment: staging
-      ref: ${{ github.sha }}
-    secrets: inherit
   prod:
     if: ${{ github.ref == 'refs/heads/main' || github.base_ref == 'main' }}
     uses: ./.github/workflows/production.yaml
