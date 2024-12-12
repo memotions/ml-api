@@ -21,6 +21,11 @@ This API is built with FastAPI and served using Uvicorn. The service listens for
 - Vertex AI
 
 
+## Documentation
+You can access the full API documentation here:\
+[**Memotions ML API Docs**](https://app.swaggerhub.com/apis/C014B4KY0471/memotions-ml-api/0.1.0)
+
+
 ## Getting Started
 
 1. Clone the Repository
